@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Key Vault</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: url("Images/back.png") no-repeat center center fixed;
+        background-size: cover;
+        padding: 20px;
+        position: relative;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.15);
+        z-index: -1;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: #1a1a2e;
+        font-weight: bold;
+      }
+
+      .header h1 {
+        font-size: 2.5em;
+        font-weight: 600;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .header-img {
+        height: 1.5em;
+        margin-right: 10px;
+      }
+
+      .vault-container {
+        display: inline-block;
+        position: relative;
+        background-color: #1a1a2e;
+        color: #fff;
+        padding: 2px 15px;
+        border-radius: 8px;
+        margin-left: 10px;
+        height: 1.2em;
+        overflow: hidden;
+      }
+
+      #animated-word {
+        display: inline-block;
+        transition: transform 0.4s ease-in-out;
+      }
+
+      @keyframes slide-up-out {
+        from {
+          transform: translateY(0%);
+          opacity: 1;
+        }
+        to {
+          transform: translateY(-120%);
+          opacity: 0;
+        }
+      }
+
+      @keyframes slide-up-in {
+        from {
+          transform: translateY(120%);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0%);
+          opacity: 1;
+        }
+      }
+
+      .sliding-out {
+        animation: slide-up-out 0.4s forwards ease-in-out;
+      }
+
+      .sliding-in {
+        animation: slide-up-in 0.4s forwards ease-in-out;
+      }
+
+      .container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .card {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: white;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      .card-header {
+        padding: 30px 25px;
+        color: white;
+        position: relative;
+        background-size: cover;
+        background-position: center;
+        background-blend-mode: overlay;
+      }
+
+      .card-header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: inherit;
+        opacity: 0.9;
+        z-index: 0;
+      }
+
+      .card-header > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      .card-header h2 {
+        font-size: 1.6em;
+        margin-bottom: 8px;
+        font-weight: 600;
+      }
+
+      .card-header .subtitle,
+      .card-header .instructor {
+        font-size: 1em;
+        opacity: 0.95;
+      }
+
+      .card-body {
+        padding: 25px 20px;
+        background: white;
+        min-height: 100px;
+      }
+
+      .card-body a {
+        display: block;
+        color: #0369a1;
+        text-decoration: none;
+        margin-bottom: 10px;
+        padding: 10px;
+        background: #f0f9ff;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        word-wrap: break-word;
+      }
+
+      .card-body a:hover {
+        background: #0369a1;
+        color: white;
+        transform: translateX(5px);
+      }
+
+      .card-1 .card-header {
+        background: linear-gradient(
+            135deg,
+            rgba(13, 148, 136, 0.9) 0%,
+            rgba(20, 184, 166, 0.9) 100%
+          ),
+          url("https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=800")
+            center/cover;
+      }
+
+      .card-2 .card-header {
+        background: linear-gradient(
+            135deg,
+            rgba(71, 85, 105, 0.9) 0%,
+            rgba(100, 116, 139, 0.9) 100%
+          ),
+          url("https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800")
+            center/cover;
+      }
+
+      .card-3 .card-header {
+        background: linear-gradient(
+            135deg,
+            rgba(3, 105, 161, 0.9) 0%,
+            rgba(2, 132, 199, 0.9) 100%
+          ),
+          url("https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800")
+            center/cover;
+      }
+
+      .card-4 .card-header {
+        background: linear-gradient(
+            135deg,
+            rgba(51, 65, 85, 0.9) 0%,
+            rgba(71, 85, 105, 0.9) 100%
+          ),
+          url("https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800")
+            center/cover;
+      }
+
+      .card-5 .card-header {
+        background: linear-gradient(
+            135deg,
+            rgba(5, 150, 105, 0.9) 0%,
+            rgba(16, 185, 129, 0.9) 100%
+          ),
+          url("https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800")
+            center/cover;
+      }
+
+      .card-6 .card-header {
+        background: linear-gradient(
+            135deg,
+            rgba(219, 39, 119, 0.9) 0%,
+            rgba(236, 72, 153, 0.9) 100%
+          ),
+          url("https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800")
+            center/cover;
+      }
+
+      @media (max-width: 1024px) {
+        .header h1 {
+          font-size: 2em;
+        }
+        .container {
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 15px;
+        }
+
+        .header {
+          padding: 15px;
+        }
+
+        .header h1 {
+          font-size: 1.8em;
+        }
+
+        .card-header h2 {
+          font-size: 1.4em;
+        }
+
+        .card-body {
+          padding: 20px 15px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .header h1 {
+          font-size: 1.5em;
+          flex-direction: column;
+          gap: 5px;
+        }
+
+        .vault-container {
+          margin-left: 0;
+          padding: 2px 10px;
+        }
+
+        .card-header h2 {
+          font-size: 1.2em;
+        }
+
+        .card-body a {
+          font-size: 0.9em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>
+        KEY
+        <span class="vault-container">
+          <span id="animated-word">VAULT</span>
+        </span>
+      </h1>
+    </div>
+
+    <div class="container">
+      <div class="card card-1">
+        <div class="card-header">
+          <h2>MASTER-LINK-3RD-SEMESTER</h2>
+          <div class="subtitle">
+            Where You Find All Course link and Holiday list, timetable and more
+          </div>
+        </div>
+        <div class="card-body">
+          <a
+            href="https://sites.google.com/rvu.edu.in/3rdsemestersite/home"
+            target="_blank"
+            >https://sites.google.com/rvu.edu.in/3rdsemestersite/home</a
+          >
+        </div>
+      </div>
+
+      <div class="card card-2">
+        <div class="card-header">
+          <h2>UNIVAULT</h2>
+          <div class="subtitle">
+            Where You can find Previous years Question Papers
+          </div>
+        </div>
+        <div class="card-body">
+          <a href="https://univault-portal.vercel.app/" target="_blank"
+            >https://univault-portal.vercel.app/</a
+          >
+        </div>
+      </div>
+
+      <div class="card card-3">
+        <div class="card-header">
+          <h2>PLACEMENT-PORTAL</h2>
+          <div class="instructor">Where You can find Placement Records</div>
+        </div>
+        <div class="card-body">
+          <a
+            href="https://sites.google.com/rvu.edu.in/socseplacementportal"
+            target="_blank"
+            >https://sites.google.com/rvu.edu.in/socseplacementportal</a
+          >
+        </div>
+      </div>
+
+      <div class="card card-4">
+        <div class="card-header">
+          <h2>LIBRARY-PAGE</h2>
+          <div class="subtitle">Where You can find Library Resources</div>
+        </div>
+        <div class="card-body">
+          <a href="https://rvu.edu.in/library.php" target="_blank"
+            >https://rvu.edu.in/library.php</a
+          >
+          <a href="https://rvu.edu.in/resources.php#myDiv1" target="_blank"
+            >https://rvu.edu.in/resources.php#myDiv1</a
+          >
+          <a
+            href="http://103.213.211.197/opac/opac21/Search.aspx"
+            target="_blank"
+            >http://103.213.211.197/opac/opac21/Search.aspx</a
+          >
+        </div>
+      </div>
+
+      <div class="card card-5">
+        <div class="card-header">
+          <h2>EXAM-OFFICE</h2>
+          <div class="subtitle">
+            Where You can find Seating Arrangement Of Exams
+          </div>
+        </div>
+        <div class="card-body">
+          <a
+            href="https://sites.google.com/rvu.edu.in/socse-exam-office"
+            target="_blank"
+            >https://sites.google.com/rvu.edu.in/socse-exam-office</a
+          >
+        </div>
+      </div>
+
+      <div class="card card-6">
+        <div class="card-header">
+          <h2>UNSTOP</h2>
+          <div class="subtitle">Where You can find College Events List</div>
+        </div>
+        <div class="card-body">
+          <a
+            href="https://unstop.com/college-fests/kalpavikas-10-rv-university-bangalore-396955"
+            target="_blank"
+            >https://unstop.com/college-fests/kalpavikas-10-rv-university-bangalore-396955</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const words = ["LINKS", "FILES", "NOTES", "EXAMS", "INFO", "VAULT"];
+      const animatedWordElement = document.getElementById("animated-word");
+      let currentIndex = 0;
+
+      function changeWord() {
+        const currentWord = words[currentIndex];
+        animatedWordElement.classList.add("sliding-out");
+        setTimeout(() => {
+          animatedWordElement.textContent = currentWord;
+          animatedWordElement.classList.remove("sliding-out");
+          animatedWordElement.classList.add("sliding-in");
+          setTimeout(
+            () => animatedWordElement.classList.remove("sliding-in"),
+            400
+          );
+        }, 400);
+        currentIndex = (currentIndex + 1) % words.length;
+      }
+
+      setInterval(changeWord, 2000);
+    </script>
+  </body>
+</html>
