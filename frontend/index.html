@@ -15,14 +15,10 @@
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         background: url("Images/back.png") no-repeat center center fixed;
         background-size: cover;
-        /* ANIMATION REMOVED: The 'animation' property below was removed. */
-        /* animation: gradient 15s ease infinite; */
         padding: 20px;
         position: relative;
         min-height: 100vh;
       }
-
-      /* KEYFRAMES REMOVED: The '@keyframes gradient' rule was removed as it's no longer needed. */
 
       body::before {
         content: "";
@@ -108,7 +104,6 @@
 
       .container {
         display: grid;
-        /* RESPONSIVE GRID: This single line makes the card layout responsive. It creates as many columns as can fit, with a minimum width of 320px. */
         grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         gap: 20px;
         max-width: 1400px;
@@ -506,7 +501,6 @@
         .header h1 {
           font-size: 2em;
         }
-        /* No change needed for .container, the grid is already responsive */
       }
 
       @media (max-width: 768px) {
@@ -1072,6 +1066,7 @@
             const isOwner =
               userLinksData[link._id] || link.userToken === getUserToken();
 
+            // MODIFICATION: The 'student-email' div has been removed from this template literal.
             card.innerHTML = `
                       <div class="card-header">
                           <div class="card-title-container">
@@ -1085,9 +1080,6 @@
                           <div class="subtitle">${escapeHtml(
                             link.description
                           )}</div>
-                          <div class="student-email" style="font-size: 0.9em; opacity: 0.8; margin-top: 5px;">
-                                Submitted by: ${escapeHtml(link.studentEmail)}
-                          </div>
                       </div>
                       <div class="card-body">
                           <a href="${escapeHtml(
@@ -1096,7 +1088,7 @@
                       </div>
                     `;
 
-            // --- MODIFICATION: APPLY DYNAMIC BACKGROUND ---
+            // --- APPLY DYNAMIC BACKGROUND ---
             const headerElement = card.querySelector(".card-header");
             if (headerElement) {
               const gradient =
@@ -1104,7 +1096,7 @@
               const imageUrl = userCardImages[index % userCardImages.length];
               headerElement.style.background = `${gradient}, url("${imageUrl}") center/cover`;
             }
-            // --- END MODIFICATION ---
+            // --- END DYNAMIC BACKGROUND ---
 
             cardsContainer.insertBefore(card, addCardBtn);
           });
