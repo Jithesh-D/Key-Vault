@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Key Vault</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: url("Images/back.png") no-repeat center center fixed;
+        background-size: cover;
+        /* ANIMATION REMOVED: The 'animation' property below was removed. */
+        /* animation: gradient 15s ease infinite; */
+        padding: 20px;
+        position: relative;
+        min-height: 100vh;
+      }
+
+      /* KEYFRAMES REMOVED: The '@keyframes gradient' rule was removed as it's no longer needed. */
+
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.15);
+        z-index: -1;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: #1a1a2e;
+        font-weight: bold;
+      }
+
+      .header h1 {
+        font-size: 2.5em;
+        font-weight: 600;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .vault-container {
+        display: inline-block;
+        position: relative;
+        background-color: #1a1a2e;
+        color: #fff;
+        padding: 2px 15px;
+        border-radius: 8px;
+        margin-left: 10px;
+        height: 1.2em;
+        overflow: hidden;
+      }
+
+      #animated-word {
+        display: inline-block;
+        transition: transform 0.4s ease-in-out;
+      }
+
+      @keyframes slide-up-out {
+        from {
+          transform: translateY(0%);
+          opacity: 1;
+        }
+        to {
+          transform: translateY(-120%);
+          opacity: 0;
+        }
+      }
+
+      @keyframes slide-up-in {
+        from {
+          transform: translateY(120%);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0%);
+          opacity: 1;
+        }
+      }
+
+      .sliding-out {
+        animation: slide-up-out 0.4s forwards ease-in-out;
+      }
+
+      .sliding-in {
+        animation: slide-up-in 0.4s forwards ease-in-out;
+      }
+
+      .container {
+        display: grid;
+        /* RESPONSIVE GRID: This single line makes the card layout responsive. It creates as many columns as can fit, with a minimum width of 320px. */
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .card {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: white;
+        cursor: pointer;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      .card-header {
+        padding: 30px 25px;
+        color: white;
+        position: relative;
+        background-size: cover;
+        background-position: center;
+        background-blend-mode: overlay;
+      }
+
+      .card-header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: inherit;
+        opacity: 0.9;
+        z-index: 0;
+      }
+
+      .card-header > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      .card-header h2 {
+        font-size: 1.6em;
+        margin-bottom: 8px;
+        font-weight: 600;
+      }
+
+      .card-header .subtitle,
+      .card-header .instructor {
+        font-size: 1em;
+        opacity: 0.95;
+      }
+
+      .card-title-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+
+      .card-title-container h2 {
+        margin-bottom: 0;
+      }
+
+      .delete-btn-header {
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 1.2em;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: all 0.3s ease;
+        padding: 0;
+        line-height: 1;
+      }
+
+      .delete-btn-header:hover {
+        opacity: 1;
+        transform: scale(1.1);
+      }
+
+      .card-body {
+        padding: 25px 20px;
+        background: white;
+        min-height: 100px;
+      }
+
+      .card-body a {
+        display: block;
+        color: #0369a1;
+        text-decoration: none;
+        margin-bottom: 10px;
+        padding: 10px;
+        background: #f0f9ff;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        word-wrap: break-word;
+      }
+
+      .card-body a:hover {
+        background: #0369a1;
+        color: white;
+        transform: translateX(5px);
+      }
+
+      /* Card background colors */
+      .card-1 .card-header {
+        background: linear-gradient(
+            135deg,
+            rgba(13, 148, 136, 0.9) 0%,
+            rgba(20, 184, 166, 0.9) 100%
+          ),
+          url("https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=800")
+            center/cover;
+      }
+
+      .card-2 .card-header {
+        background: linear-gradient(
+            135deg,
+            rgba(71, 85, 105, 0.9) 0%,
+            rgba(100, 116, 139, 0.9) 100%
+          ),
+          url("https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800")
+            center/cover;
+      }
+
+      .card-3 .card-header {
+        background: linear-gradient(
+            135deg,
+            rgba(3, 105, 161, 0.9) 0%,
+            rgba(2, 132, 199, 0.9) 100%
+          ),
+          url("https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800")
+            center/cover;
+      }
+
+      .card-4 .card-header {
+        background: linear-gradient(
+            135deg,
+            rgba(51, 65, 85, 0.9) 0%,
+            rgba(71, 85, 105, 0.9) 100%
+          ),
+          url("https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800")
+            center/cover;
+      }
+
+      .card-5 .card-header {
+        background: linear-gradient(
+            135deg,
+            rgba(5, 150, 105, 0.9) 0%,
+            rgba(16, 185, 129, 0.9) 100%
+          ),
+          url("https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800")
+            center/cover;
+      }
+
+      .card-6 .card-header {
+        background: linear-gradient(
+            135deg,
+            rgba(219, 39, 119, 0.9) 0%,
+            rgba(236, 72, 153, 0.9) 100%
+          ),
+          url("https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800")
+            center/cover;
+      }
+
+      /* Add Card Button Styles */
+      .add-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 2px dashed rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .add-card:hover {
+        background: rgba(255, 255, 255, 0.35);
+        transform: translateY(-5px);
+      }
+
+      .add-icon {
+        font-size: 3em;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .add-card:hover .add-icon {
+        color: white;
+        transform: scale(1.1);
+      }
+
+      .add-text {
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 600;
+        font-size: 1.2em;
+      }
+
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+        animation: fadeIn 0.3s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .modal-content {
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        width: 90%;
+        max-width: 500px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        animation: slideUp 0.4s ease;
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .modal-header {
+        background: transparent;
+        color: #1a1a2e;
+        padding: 20px;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+      }
+
+      .modal-header h2 {
+        font-size: 1.8em;
+        margin: 0;
+      }
+
+      .modal-body {
+        padding: 25px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #1a1a2e;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border-radius: 6px;
+        font-size: 1em;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #1a1a2e;
+      }
+
+      .form-group input:focus,
+      .form-group textarea:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.9);
+        border-color: #1a2a6c;
+        box-shadow: none;
+      }
+
+      .form-group textarea {
+        min-height: 100px;
+        resize: vertical;
+      }
+
+      .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .btn {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 6px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn-primary {
+        background: #1a2a6c;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #0e1a4a;
+      }
+
+      .btn-secondary {
+        background: #f0f0f0;
+        color: #333;
+      }
+
+      .btn-secondary:hover {
+        background: #e0e0e0;
+      }
+
+      /* Success Message */
+      .success-message {
+        margin-top: 20px;
+        padding: 15px;
+        background: rgba(5, 150, 105, 0.9);
+        color: white;
+        border-radius: 6px;
+        text-align: center;
+        display: none;
+      }
+
+      .error-message {
+        margin-top: 20px;
+        padding: 15px;
+        background: rgba(239, 68, 68, 0.9);
+        color: white;
+        border-radius: 6px;
+        text-align: center;
+        display: none;
+      }
+
+      /* Loading Spinner */
+      .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top: 4px solid #1a2a6c;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+        display: none;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Responsive Design */
+      @media (max-width: 1024px) {
+        .header h1 {
+          font-size: 2em;
+        }
+        /* No change needed for .container, the grid is already responsive */
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 15px;
+        }
+
+        .header {
+          padding: 15px;
+        }
+
+        .header h1 {
+          font-size: 1.8em;
+        }
+
+        .card-header h2 {
+          font-size: 1.4em;
+        }
+
+        .card-body {
+          padding: 20px 15px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .header h1 {
+          font-size: 1.5em;
+          flex-direction: column;
+          gap: 5px;
+        }
+
+        .vault-container {
+          margin-left: 0;
+          padding: 2px 10px;
+        }
+
+        .card-header h2 {
+          font-size: 1.2em;
+        }
+
+        .card-body a {
+          font-size: 0.9em;
+        }
+
+        .modal-content {
+          width: 95%;
+        }
+
+        .form-actions {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>
+        KEY
+        <span class="vault-container">
+          <span id="animated-word">VAULT</span>
+        </span>
+      </h1>
+    </div>
+
+    <div class="container" id="cards-container">
+      <div class="card card-1">
+        <div class="card-header">
+          <h2>MASTER-LINK-3RD-SEMESTER</h2>
+          <div class="subtitle">
+            Where You Find All Course link and Holiday list, timetable and more
+          </div>
+        </div>
+        <div class="card-body">
+          <a
+            href="https://sites.google.com/rvu.edu.in/3rdsemestersite/home"
+            target="_blank"
+            >https://sites.google.com/rvu.edu.in/3rdsemestersite/home</a
+          >
+        </div>
+      </div>
+
+      <div class="card card-2">
+        <div class="card-header">
+          <h2>UNIVAULT</h2>
+          <div class="subtitle">
+            Where You can find Previous years Question Papers
+          </div>
+        </div>
+        <div class="card-body">
+          <a href="https://univault-portal.vercel.app/" target="_blank"
+            >https://univault-portal.vercel.app/</a
+          >
+        </div>
+      </div>
+
+      <div class="card card-3">
+        <div class="card-header">
+          <h2>PLACEMENT-PORTAL</h2>
+          <div class="instructor">Where You can find Placement Records</div>
+        </div>
+        <div class="card-body">
+          <a
+            href="https://sites.google.com/rvu.edu.in/socseplacementportal"
+            target="_blank"
+            >https://sites.google.com/rvu.edu.in/socseplacementportal</a
+          >
+        </div>
+      </div>
+
+      <div class="card card-4">
+        <div class="card-header">
+          <h2>LIBRARY-PAGE</h2>
+          <div class="subtitle">Where You can find Library Resources</div>
+        </div>
+        <div class="card-body">
+          <a href="https://rvu.edu.in/library.php" target="_blank"
+            >https://rvu.edu.in/library.php</a
+          >
+          <a href="https://rvu.edu.in/resources.php#myDiv1" target="_blank"
+            >https://rvu.edu.in/resources.php#myDiv1</a
+          >
+          <a
+            href="http://103.213.211.197/opac/opac21/Search.aspx"
+            target="_blank"
+            >http://103.213.211.197/opac/opac21/Search.aspx</a
+          >
+        </div>
+      </div>
+
+      <div class="card card-5">
+        <div class="card-header">
+          <h2>EXAM-OFFICE</h2>
+          <div class="subtitle">
+            Where You can find Seating Arrangement Of Exams
+          </div>
+        </div>
+        <div class="card-body">
+          <a
+            href="https://sites.google.com/rvu.edu.in/socse-exam-office"
+            target="_blank"
+            >https://sites.google.com/rvu.edu.in/socse-exam-office</a
+          >
+        </div>
+      </div>
+
+      <div class="card card-6">
+        <div class="card-header">
+          <h2>UNSTOP</h2>
+          <div class="subtitle">Where You can find College Events List</div>
+        </div>
+        <div class="card-body">
+          <a
+            href="https://unstop.com/college-fests/kalpavikas-10-rv-university-bangalore-396955"
+            target="_blank"
+            >https://unstop.com/college-fests/kalpavikas-10-rv-university-bangalore-396955</a
+          >
+        </div>
+      </div>
+
+      <div class="card add-card" id="add-card-btn">
+        <div class="add-icon">+</div>
+        <div class="add-text">Add New Link</div>
+      </div>
+    </div>
+
+    <div class="modal" id="add-link-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Suggest a New Link</h2>
+        </div>
+        <div class="modal-body">
+          <form id="link-form">
+            <div class="form-group">
+              <label for="student-email">RVU Student Email</label>
+              <input
+                type="email"
+                id="student-email"
+                placeholder="yourname@rvu.edu.in"
+                required
+              />
+              <small
+                style="
+                  color: #666;
+                  font-size: 0.9em;
+                  margin-top: 5px;
+                  display: block;
+                "
+              >
+                Only @rvu.edu.in email addresses are allowed
+              </small>
+            </div>
+            <div class="form-group">
+              <label for="link-title">Title</label>
+              <input
+                type="text"
+                id="link-title"
+                placeholder="e.g., Course Materials Portal"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="link-url">URL</label>
+              <input
+                type="url"
+                id="link-url"
+                placeholder="https://example.com"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="link-description">Description</label>
+              <textarea
+                id="link-description"
+                placeholder="Brief description of what this link provides..."
+                required
+              ></textarea>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary" id="cancel-btn">
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-primary">Submit Link</button>
+            </div>
+          </form>
+          <div class="spinner" id="loading-spinner"></div>
+          <div class="success-message" id="success-message">
+            Thank you! Your link suggestion has been submitted.
+          </div>
+          <div class="error-message" id="error-message">
+            There was an error submitting your link. Please try again.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // The JavaScript remains the same as your original file
+      // Configuration
+      const API_BASE_URL = "http://localhost:3000/api";
+
+      // --- NEW: ARRAYS FOR DYNAMIC CARD STYLING ---
+      const userCardImages = [
+        "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=800",
+        "https://images.unsplash.com/photo-1517694712202-1428bc3835b3?w=800",
+        "https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?w=800",
+        "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800",
+        "https://images.unsplash.com/photo-1543269865-cbf427effbad?w=800",
+      ];
+
+      const userCardGradients = [
+        "linear-gradient(135deg, rgba(147, 51, 234, 0.9) 0%, rgba(196, 181, 253, 0.9) 100%)",
+        "linear-gradient(135deg, rgba(14, 165, 233, 0.9) 0%, rgba(125, 211, 252, 0.9) 100%)",
+        "linear-gradient(135deg, rgba(20, 184, 166, 0.9) 0%, rgba(110, 231, 183, 0.9) 100%)",
+        "linear-gradient(135deg, rgba(245, 158, 11, 0.9) 0%, rgba(251, 191, 36, 0.9) 100%)",
+        "linear-gradient(135deg, rgba(239, 68, 68, 0.9) 0%, rgba(252, 165, 165, 0.9) 100%)",
+      ];
+      // --- END NEW ARRAYS ---
+
+      // Word animation script
+      const words = ["LINKS", "FILES", "NOTES", "EXAMS", "INFO", "VAULT"];
+      const animatedWordElement = document.getElementById("animated-word");
+      let currentIndex = 0;
+
+      function changeWord() {
+        const currentWord = words[currentIndex];
+        animatedWordElement.classList.add("sliding-out");
+        setTimeout(() => {
+          animatedWordElement.textContent = currentWord;
+          animatedWordElement.classList.remove("sliding-out");
+          animatedWordElement.classList.add("sliding-in");
+          setTimeout(
+            () => animatedWordElement.classList.remove("sliding-in"),
+            400
+          );
+        }, 400);
+        currentIndex = (currentIndex + 1) % words.length;
+      }
+
+      setInterval(changeWord, 2000);
+
+      // User management
+      function getUserToken() {
+        let userToken = localStorage.getItem("keyVaultUserToken");
+        if (!userToken) {
+          userToken =
+            "user_" +
+            Math.random().toString(36).substr(2, 9) +
+            Date.now().toString(36);
+          localStorage.setItem("keyVaultUserToken", userToken);
+        }
+        return userToken;
+      }
+
+      function getUserLinks() {
+        return JSON.parse(localStorage.getItem("userLinks") || "{}");
+      }
+
+      function saveUserLink(linkId) {
+        const userLinks = getUserLinks();
+        userLinks[linkId] = true;
+        localStorage.setItem("userLinks", JSON.stringify(userLinks));
+      }
+
+      function removeUserLink(linkId) {
+        const userLinks = getUserLinks();
+        delete userLinks[linkId];
+        localStorage.setItem("userLinks", JSON.stringify(userLinks));
+      }
+
+      // Validate RVU email
+      function validateRVUEmail(email) {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@rvu\.edu\.in$/;
+        return emailRegex.test(email);
+      }
+
+      // Modal functionality
+      const addCardBtn = document.getElementById("add-card-btn");
+      const modal = document.getElementById("add-link-modal");
+      const cancelBtn = document.getElementById("cancel-btn");
+      const linkForm = document.getElementById("link-form");
+      const successMessage = document.getElementById("success-message");
+      const errorMessage = document.getElementById("error-message");
+      const loadingSpinner = document.getElementById("loading-spinner");
+      const cardsContainer = document.getElementById("cards-container");
+
+      // Open modal
+      addCardBtn.addEventListener("click", () => {
+        modal.style.display = "flex";
+      });
+
+      // Close modal
+      cancelBtn.addEventListener("click", () => {
+        closeModal();
+      });
+
+      // Close modal when clicking outside
+      window.addEventListener("click", (e) => {
+        if (e.target === modal) {
+          closeModal();
+        }
+      });
+
+      function closeModal() {
+        modal.style.display = "none";
+        successMessage.style.display = "none";
+        errorMessage.style.display = "none";
+        linkForm.reset();
+      }
+
+      // Real-time email validation
+      const studentEmailInput = document.getElementById("student-email");
+      if (studentEmailInput) {
+        studentEmailInput.addEventListener("blur", function () {
+          const email = this.value.trim();
+          if (email && !validateRVUEmail(email)) {
+            this.style.borderColor = "#e53e3e";
+            this.style.boxShadow = "0 0 0 3px rgba(229, 62, 62, 0.2)";
+          } else {
+            this.style.borderColor = "#ddd";
+            this.style.boxShadow = "none";
+          }
+        });
+      }
+
+      // Form submission
+      linkForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        // Get form values
+        const studentEmail = document
+          .getElementById("student-email")
+          .value.trim();
+        const title = document.getElementById("link-title").value.trim();
+        const url = document.getElementById("link-url").value.trim();
+        const description = document
+          .getElementById("link-description")
+          .value.trim();
+
+        // Basic validation
+        if (!studentEmail || !title || !url || !description) {
+          showError("Please fill in all fields");
+          return;
+        }
+
+        // RVU Email validation
+        if (!validateRVUEmail(studentEmail)) {
+          showError("Please use a valid RVU email address (@rvu.edu.in)");
+          document.getElementById("student-email").focus();
+          return;
+        }
+
+        // URL validation
+        try {
+          new URL(url);
+        } catch (err) {
+          showError("Please enter a valid URL (include http:// or https://)");
+          return;
+        }
+
+        // Show loading spinner
+        loadingSpinner.style.display = "block";
+        successMessage.style.display = "none";
+        errorMessage.style.display = "none";
+
+        try {
+          console.log("📤 Submitting link to backend...");
+
+          // Send data to backend API
+          const response = await fetch(`${API_BASE_URL}/links`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              title,
+              url,
+              description,
+              studentEmail,
+              userToken: getUserToken(),
+              createdAt: new Date().toISOString(),
+            }),
+          });
+
+          console.log("📥 Response status:", response.status);
+
+          if (response.ok) {
+            const newLink = await response.json();
+            console.log("✅ Link submitted successfully:", newLink);
+
+            // Save that this user created this link
+            saveUserLink(newLink._id);
+
+            // Show success message
+            showSuccess("Thank you! Your link suggestion has been submitted.");
+
+            // Reset form
+            linkForm.reset();
+
+            // Refresh the user submitted links
+            await loadUserLinks();
+
+            // Close modal after 3 seconds
+            setTimeout(() => {
+              closeModal();
+            }, 3000);
+          } else {
+            const errorData = await response.json();
+            throw new Error(
+              errorData.error || `HTTP error! status: ${response.status}`
+            );
+          }
+        } catch (error) {
+          console.error("❌ Error submitting link:", error);
+          showError(
+            `Failed to submit link: ${error.message}. Make sure the backend server is running.`
+          );
+        } finally {
+          loadingSpinner.style.display = "none";
+        }
+      });
+
+      // Delete link function
+      async function deleteLink(linkId) {
+        if (
+          !confirm(
+            "Are you sure you want to delete this link? This action cannot be undone."
+          )
+        ) {
+          return;
+        }
+
+        try {
+          console.log(`🗑️ Deleting link ${linkId}...`);
+
+          const response = await fetch(`${API_BASE_URL}/links/${linkId}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userToken: getUserToken(),
+            }),
+          });
+
+          if (response.ok) {
+            console.log("✅ Link deleted successfully");
+
+            // Remove from local storage
+            removeUserLink(linkId);
+
+            // Refresh the links
+            await loadUserLinks();
+
+            // Show success message
+            showTemporarySuccess("Link deleted successfully!");
+          } else {
+            const errorData = await response.json();
+            throw new Error(
+              errorData.error || `HTTP error! status: ${response.status}`
+            );
+          }
+        } catch (error) {
+          console.error("❌ Error deleting link:", error);
+          alert(`Failed to delete link: ${error.message}`);
+        }
+      }
+
+      function showSuccess(message) {
+        successMessage.textContent = message;
+        successMessage.style.display = "block";
+        errorMessage.style.display = "none";
+      }
+
+      function showError(message) {
+        errorMessage.textContent = message;
+        errorMessage.style.display = "block";
+        successMessage.style.display = "none";
+      }
+
+      function showTemporarySuccess(message) {
+        const tempSuccess = document.createElement("div");
+        tempSuccess.className = "success-message";
+        tempSuccess.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 10000;
+        margin: 0;
+      `;
+        document.body.appendChild(tempSuccess);
+
+        setTimeout(() => {
+          tempSuccess.remove();
+        }, 3000);
+      }
+
+      // Function to load user-submitted links
+      async function loadUserLinks() {
+        try {
+          console.log("🔄 Loading user links...");
+          const response = await fetch(`${API_BASE_URL}/links`);
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const userLinks = await response.json();
+          console.log(`✅ Loaded ${userLinks.length} user links`);
+
+          const existingCards = cardsContainer.querySelectorAll(
+            ".card.user-submitted"
+          );
+          existingCards.forEach((card) => {
+            card.remove();
+          });
+
+          userLinks.forEach((link, index) => {
+            const card = document.createElement("div");
+            card.className = `card user-submitted`; // Set base classes
+            card.dataset.linkId = link._id;
+
+            const userLinksData = getUserLinks();
+            const isOwner =
+              userLinksData[link._id] || link.userToken === getUserToken();
+
+            card.innerHTML = `
+                      <div class="card-header">
+                          <div class="card-title-container">
+                              <h2>${escapeHtml(link.title)}</h2>
+                              ${
+                                isOwner
+                                  ? `<button class="delete-btn-header" onclick="deleteLink('${link._id}')" title="Delete this link"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='red' width='24px' height='24px'%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3Cpath d='M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5L13 2H9L7.5 4H5v2h14V4z'/%3E%3C/svg%3E" alt="Delete" style="width: 20px; height: 20px; vertical-align: middle;"></button>`
+                                  : ""
+                              }
+                          </div>
+                          <div class="subtitle">${escapeHtml(
+                            link.description
+                          )}</div>
+                          <div class="student-email" style="font-size: 0.9em; opacity: 0.8; margin-top: 5px;">
+                                Submitted by: ${escapeHtml(link.studentEmail)}
+                          </div>
+                      </div>
+                      <div class="card-body">
+                          <a href="${escapeHtml(
+                            link.url
+                          )}" target="_blank">${escapeHtml(link.url)}</a>
+                      </div>
+                    `;
+
+            // --- MODIFICATION: APPLY DYNAMIC BACKGROUND ---
+            const headerElement = card.querySelector(".card-header");
+            if (headerElement) {
+              const gradient =
+                userCardGradients[index % userCardGradients.length];
+              const imageUrl = userCardImages[index % userCardImages.length];
+              headerElement.style.background = `${gradient}, url("${imageUrl}") center/cover`;
+            }
+            // --- END MODIFICATION ---
+
+            cardsContainer.insertBefore(card, addCardBtn);
+          });
+        } catch (error) {
+          console.error("❌ Error loading user links:", error);
+        }
+      }
+
+      // Utility function to escape HTML
+      function escapeHtml(unsafe) {
+        return unsafe
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      // Test backend connection on page load
+      async function testBackendConnection() {
+        try {
+          console.log("🔌 Testing backend connection...");
+          const response = await fetch(`${API_BASE_URL}/health`);
+          if (response.ok) {
+            const health = await response.json();
+            console.log("✅ Backend connection successful:", health);
+          } else {
+            console.warn("⚠️ Backend health check failed");
+          }
+        } catch (error) {
+          console.error("❌ Backend connection failed:", error);
+        }
+      }
+
+      // Load user submitted links when page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        console.log("🚀 Key Vault initialized");
+        testBackendConnection();
+        loadUserLinks();
+      });
+    </script>
+  </body>
+</html>
